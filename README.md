@@ -1,6 +1,6 @@
 # Proyecto de Pruebas de Integración con Spring Boot
 
-Proyecto de ejemplo para la asignatura **Infraestructuras y Procesos de Soporte** (UMA).  
+Proyecto para la asignatura **Infraestructuras y Procesos de Soporte** (UMA).  
 Demuestra cómo estructurar y ejecutar pruebas unitarias y de integración en una API REST con Spring Boot.
 
 ---
