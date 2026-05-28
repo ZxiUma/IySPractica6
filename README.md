@@ -107,3 +107,5 @@ Arrancan el contexto de Spring completo (o una parte de él).
 - Mockito
 - MockMvc
 - WebTestClient (WebFlux)
+
+[![CI — Build & Integration Tests](https://github.com/ZxiUma/IySPractica6/actions/workflows/ci-test.yml/badge.svg)](https://github.com/ZxiUma/IySPractica6/actions/workflows/ci-test.yml)
