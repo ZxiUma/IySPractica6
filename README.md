@@ -5,6 +5,10 @@ Demuestra cómo estructurar y ejecutar pruebas unitarias y de integración en un
 
 ---
 
+## Estado del Proyecto
+[![CI — Build & Integration Tests](https://github.com/ZxiUma/IySPractica6/actions/workflows/ci-test.yml/badge.svg)](https://github.com/ZxiUma/IySPractica6/actions/workflows/ci-test.yml)
+![Coverage](.github/badges/jacoco.svg)
+
 ## Estructura del proyecto
 
 ```
@@ -107,5 +111,3 @@ Arrancan el contexto de Spring completo (o una parte de él).
 - Mockito
 - MockMvc
 - WebTestClient (WebFlux)
-
-[![CI — Build & Integration Tests](https://github.com/ZxiUma/IySPractica6/actions/workflows/ci-test.yml/badge.svg)](https://github.com/ZxiUma/IySPractica6/actions/workflows/ci-test.yml)
