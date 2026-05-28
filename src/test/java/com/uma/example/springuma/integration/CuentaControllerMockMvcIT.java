@@ -1,5 +1,8 @@
 package com.uma.example.springuma.integration;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -7,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +62,11 @@ class CuentaControllerMockMvcIT extends AbstractIntegration {
     @DisplayName("La lista de cuentas está vacía al inicio")
     void getCuentas_inicialmenteVacia() throws Exception {
     // TODO: implementa aquí el test
-}
+        this.mockMvc.perform(get("/cuentas")
+                .accept("application/json"))
+                .andExpect(content().json("[]"))
+                .andExpect(status().isOk());
+    }
 
     // ------------------------------------------------------------------ //
     //  POST /cuenta  →  GET /cuenta/{id}
@@ -68,12 +76,49 @@ class CuentaControllerMockMvcIT extends AbstractIntegration {
     @DisplayName("Crear una cuenta y recuperarla por ID")
     void crearCuenta_seRecuperaPorId() throws Exception {
         // TODO: implementa aquí el test
+        String cuentaJson = objectMapper.writeValueAsString(cuenta);
+
+        this.mockMvc.perform(post("/cuenta")
+                .contentType("application/json")
+                .content(cuentaJson))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get("/cuenta/1")
+                .accept("application/json"))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.ccc").value(100001))
+                .andExpect(status().isOk());
+        
     }
 
     @Test
     @DisplayName("Crear dos cuentas distintas: el listado contiene ambas")
     void crearDosCuentas_listaContieneDos() throws Exception {
         // TODO: implementa aquí el test
+        // 1. ARRANGE: Preparamos dos objetos cuenta diferentes
+        Cuenta cuenta2 = new Cuenta();
+        cuenta2.setId(2);
+        cuenta2.setCcc(200002);
+        cuenta2.setBalance(1000.0);
+
+        // 2. ACT: Realizamos los dos POST
+        this.mockMvc.perform(post("/cuenta")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(cuenta))) // Usamos la del @BeforeEach
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(post("/cuenta")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(cuenta2)))
+                .andExpect(status().isOk());
+
+        // 3. ASSERT: Verificamos el GET /cuentas
+        this.mockMvc.perform(get("/cuentas")
+                .accept("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2))) // Verificamos que hay exactamente 2 cuentas
+                .andExpect(jsonPath("$[0].ccc").value(100001)) // Primera cuenta
+                .andExpect(jsonPath("$[1].ccc").value(200002)); // Segunda cuenta
     }
 
     // ------------------------------------------------------------------ //
@@ -84,5 +129,23 @@ class CuentaControllerMockMvcIT extends AbstractIntegration {
     @DisplayName("Crear y eliminar una cuenta: el listado queda vacío")
     void crearYEliminarCuenta_listaQuedaVacia() throws Exception {
         // TODO: implementa aquí el test
+        // 1. ARRAGE: Creamos la cuenta primero
+        String cuentaJson = objectMapper.writeValueAsString(cuenta);
+        this.mockMvc.perform(post("/cuenta")
+                .contentType("application/json")
+                .content(cuentaJson))
+                .andExpect(status().isOk());
+
+        // 2. ACT: Eliminamos la cuenta (suponiendo que la ruta es /cuenta/{id})
+        this.mockMvc.perform(delete("/cuenta")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(cuenta)))
+            .andExpect(status().isOk());;
+
+        // 3. ASSERT: Verificamos que el listado vuelve a estar vacío
+        this.mockMvc.perform(get("/cuentas")
+                .accept("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
     }
 }
